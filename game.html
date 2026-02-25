@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>生活用品识图游戏</title>
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family: system-ui, sans-serif;
+}
+body{
+  background:#f7f7f7;
+  text-align:center;
+  padding:15px;
+}
+.title{
+  font-size:28px;
+  font-weight:bold;
+  color:#2a6d32;
+  margin:20px 0 10px;
+}
+.tip{
+  font-size:20px;
+  color:#444;
+  margin-bottom:30px;
+}
+#game{
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:12px;
+  max-width:360px;
+  margin:0 auto;
+}
+.card{
+  height:130px;
+  background:#a1d997;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:50px;
+  border:3px solid #77b377;
+}
+.card.show{
+  background:white;
+}
+.card.ok{
+  background:#ffdf70;
+}
+#reset{
+  margin-top:30px;
+  padding:14px 30px;
+  font-size:22px;
+  background:#2a6d32;
+  color:white;
+  border:none;
+  border-radius:12px;
+}
+</style>
+</head>
+<body>
+
+<div class="title">生活用品识图游戏</div>
+<div class="tip">点一下卡片，找一样的物品</div>
+<div id="game"></div>
+<button id="reset">重新开始</button>
+
+<script>
+const game = document.getElementById('game');
+const reset = document.getElementById('reset');
+const items = ['🥛','👓','🔑','📱'];
+let first = null;
+let lock = false;
+
+function start(){
+  game.innerHTML = '';
+  const list = [...items, ...items].sort(()=>Math.random()-0.5);
+  list.forEach((emoji, i)=>{
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.dataset.emoji = emoji;
+    div.onclick = flip;
+    game.appendChild(div);
+  });
+  first = null;
+  lock = false;
+}
+
+function flip(){
+  if(lock) return;
+  if(this.classList.contains('show')||this.classList.contains('ok')) return;
+  
+  this.classList.add('show');
+  this.innerText = this.dataset.emoji;
+
+  if(!first){
+    first = this;
+  }else{
+    lock = true;
+    if(first.dataset.emoji === this.dataset.emoji){
+      first.classList.add('ok');
+      this.classList.add('ok');
+      first = null;
+      lock = false;
+    }else{
+      setTimeout(()=>{
+        first.classList.remove('show');
+        first.innerText = '';
+        this.classList.remove('show');
+        this.innerText = '';
+        first = null;
+        lock = false;
+      }, 1000);
+    }
+  }
+}
+
+reset.onclick = start;
+start();
+</script>
+</body>
+</html>
